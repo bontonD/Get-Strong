@@ -273,11 +273,11 @@
                     // No user, sign in.
                     authStatusEl.textContent = "Logging in...";
                     try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
+                     //   if (initialAuthToken) {
+                    //        await signInWithCustomToken(auth, initialAuthToken);
+                   //     } else {
                             await signInAnonymously(auth);
-                        }
+                //        }
                     } catch (e) {
                    //     console.error("Error signing in:", e);
                    //     authStatusEl.textContent = "Login failed. Please refresh.";
@@ -588,5 +588,6 @@
 </body>
 
 </html>
+
 
 
