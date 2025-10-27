@@ -1,0 +1,417 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced 5-Day Workout Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2d3748">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-button {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .tab-button.active {
+            color: #2b6cb0;
+            border-bottom-color: #2b6cb0;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+
+        /* Input styles */
+        .log-input {
+            width: 100%;
+            min-width: 60px;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            background-color: #f7fafc;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .log-input:focus {
+            background-color: #fff;
+            border-color: #4299e1;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+        }
+        .notes-input {
+            text-align: left;
+            width: 100%;
+        }
+
+
+        /* History styles */
+        .history-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .history-header {
+            background-color: #f7fafc;
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-body {
+            display: none;
+            padding: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .history-body.open {
+            display: block;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+
+
+    <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <header class="p-6 bg-gray-800 text-white">
+            <h1 class="text-2xl md:text-3xl font-bold">Advanced 5-Day Workout Tracker</h1>
+            <p id="auth-status" class="mt-2 text-sm text-gray-400">Initializing...</p>
+        </header>
+
+
+        <!-- Tab Navigation -->
+        <nav class="flex flex-wrap border-b border-gray-300" aria-label="Tabs">
+            <button class="tab-button active" onclick="openTab(event, 'logWorkout')">Log Workout</button>
+            <button class="tab-button" onclick="openTab(event, 'history')">History</button>
+            <button class="tab-button" onclick="openTab(event, 'help')">Help</button>
+        </nav>
+
+
+        <!-- Tab Content -->
+        <div class="p-6">
+
+
+            <!-- Log Workout Tab -->
+            <div id="logWorkout" class="tab-content active">
+                <div class="mb-4">
+                    <label for="workout-select" class="block text-sm font-medium text-gray-700 mb-1">Select Workout</label>
+                    <select id="workout-select" class="w-full max-w-xs p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <!-- Options will be populated by JS -->
+                    </select>
+                </div>
+
+
+                <div id="workout-table-container" class="overflow-x-auto">
+                    <!-- Workout table will be dynamically rendered here -->
+                </div>
+                
+                <button id="save-workout-btn" class="mt-6 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+                    Save Workout
+                </button>
+                <div id="save-status" class="mt-2 text-sm text-green-600"></div>
+            </div>
+
+
+            <!-- History Tab -->
+            <div id="history" class="tab-content">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Workout History</h2>
+                <div id="history-list-container">
+                    <div id="history-loader" class="loader"></div>
+                    <p id="history-empty" class="text-gray-500 hidden">You have no saved workouts. Go log one!</p>
+                    <!-- History items will be dynamically rendered here -->
+                </div>
+            </div>
+
+
+            <!-- Help Tab (Unchanged) -->
+            <div id="help" class="tab-content">
+                 <div class="help-content max-w-3xl">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Help & Guidelines</h2>
+                    <h3>Understanding RIR (Reps In Reserve)</h3>
+                    <p>RIR is a way to measure the intensity of your sets. It's the number of reps you *could have done* before failure. For this program, you should aim for **1-2 RIR** on your main lifts.</p>
+                    <ul>
+                        <li><strong>RIR 3-4:</strong> Warm-up weight. Feels light.</li>
+                        <li><strong>RIR 2:</strong> Challenging. You're confident you could have done 2 more reps.</li>
+                        <li><strong>RIR 1:</strong> Very difficult. You *might* have gotten one more rep. This is the sweet spot for growth.</li>
+                        <li><strong>RIR 0:</strong> Total muscular failure. You couldn't do another rep. Use this sparingly, perhaps on the last set of an isolation exercise.</li>
+                    </ul>
+                    <h3>VO2max (HIIT) Instructions</h3>
+                    <p>The goal of this workout is to spend time at or near your maximum heart rate to improve your body's oxygen processing capacity. The "work" interval should be at a 9/10 effort level—a pace you can barely hold for the duration.</p>
+                    <h3>Alternative VO2max: The Cooper Test</h3>
+                    <p>If you want to estimate your VO2max, you can perform the **12-Minute Cooper Test** (ideally on a separate day or in place of your HIIT workout).</p>
+                    <ol class="list-decimal list-inside mb-4 text-gray-600">
+                        <li>Warm up thoroughly.</li>
+                        <li>Run or jog as far as you possibly can on a flat surface (like a running track) in exactly 12 minutes.</li>
+                        <li>Record the total distance traveled in meters.</li>
+                        <li>Use this formula to estimate your VO2max: <br>
+                            <code class="bg-gray-200 p-1 rounded">(Distance in meters - 504.9) / 44.73</code>
+                        </li>
+                    </ol>
+                    <h3>Time Management</h3>
+                    <p>To finish these workouts in 30-45 minutes, you must be strict with your rest periods. Keep a timer running.</p>
+                    <h3>Warm-up & Cool-down</h3>
+                    <p>Never skip these. They are critical for performance and injury prevention.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, collection, addDoc, onSnapshot, query, Timestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+        // --- Configs & Global State ---
+
+
+        // DO NOT EDIT THESE. They are injected by the platform.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+
+        let db, auth, userId;
+        let allWorkouts = []; // Local cache of all workouts
+        let currentWorkoutType = "Upper Body (B)"; // Default
+
+
+        const authStatusEl = document.getElementById('auth-status');
+        const workoutSelectEl = document.getElementById('workout-select');
+        const tableContainerEl = document.getElementById('workout-table-container');
+        const saveBtnEl = document.getElementById('save-workout-btn');
+        const saveStatusEl = document.getElementById('save-status');
+        const historyListEl = document.getElementById('history-list-container');
+        const historyLoaderEl = document.getElementById('history-loader');
+        const historyEmptyEl = document.getElementById('history-empty');
+
+
+        // --- Workout Templates ---
+        const workoutTemplates = {
+            "Upper Body (B)": [
+                { name: "Pull-ups / Lat Pulldown", target: "4 sets of 6-12", sets: 4 },
+                { name: "Overhead Press", target: "3 sets of 6-10", sets: 3 },
+                { name: "Single-Arm DB Row (3A)", target: "3 sets of 8-12 / arm", sets: 3 },
+                { name: "Dips / Close Grip Push-ups (3B)", target: "3 sets of 10-15", sets: 3 },
+                { name: "Bicep Curls (Finisher)", target: "2 sets of 12-15", sets: 2 }
+            ],
+            "Lower Body (B)": [
+                { name: "Deadlift (Conventional/Sumo)", target: "4 sets of 5-8", sets: 4 },
+                { name: "Leg Press / Hack Squat", target: "3 sets of 10-15", sets: 3 },
+                { name: "Hamstring Curls (3A)", target: "3 sets of 12-15", sets: 3 },
+                { name: "Calf Raises (3B)", target: "3 sets of 15-20", sets: 3 }
+            ],
+            "VO2max": [
+                { name: "Running", target: "4-5 rounds of 4min work / 3-4min rest", sets: 1, type: 'cardio' },
+                { name: "Cycling / Rower", target: "5-6 rounds of 3min work / 3min rest", sets: 1, type: 'cardio' },
+                { name: "Assault Bike", target: "8-10 rounds of 60s work / 90-120s rest", sets: 1, type: 'cardio' }
+            ],
+            "Upper Body (A)": [
+                { name: "Barbell Bench Press", target: "4 sets of 6-10", sets: 4 },
+                { name: "Seated Cable Row", target: "3 sets of 8-12", sets: 3 },
+                { name: "Incline DB Press (3A)", target: "3 sets of 8-12", sets: 3 },
+                { name: "Face Pulls (3B)", target: "3 sets of 15-20", sets: 3 },
+                { name: "Tricep Pushdowns (Finisher)", target: "2 sets of 12-15", sets: 2 }
+            ],
+            "Lower Body (A)": [
+                { name: "Barbell Back Squat", target: "4 sets of 6-10", sets: 4 },
+                { name: "Romanian Deadlifts (RDLs)", target: "3 sets of 8-12", sets: 3 },
+                { name: "Bulgarian Split Squats (3A)", target: "3 sets of 8-12 / leg", sets: 3 },
+                { name: "Hanging Knee Raises (3B)", target: "3 sets of 15-20", sets: 3 }
+            ]
+        };
+
+
+        // --- App Initialization ---
+        function initApp() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                setLogLevel('Debug'); // Enable detailed Firestore logs
+                
+                setupAuthListener();
+                setupEventListeners();
+                populateWorkoutSelector();
+            } catch (e) {
+                console.error("Error initializing Firebase:", e);
+                authStatusEl.textContent = "Error: Could not connect to database.";
+            }
+        }
+
+
+        // --- Authentication ---
+        function setupAuthListener() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    authStatusEl.textContent = `Logged in as: ${userId}`;
+                    await setupFirestoreListener(userId);
+                } else {
+                    // No user, sign in.
+                    authStatusEl.textContent = "Logging in...";
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (e) {
+                        console.error("Error signing in:", e);
+                        authStatusEl.textContent = "Login failed. Please refresh.";
+                    }
+                }
+            });
+        }
+
+
+        // --- Firestore Real-time Listener ---
+        async function setupFirestoreListener(userId) {
+            const collectionPath = `/artifacts/${appId}/users/${userId}/completed_workouts`;
+            const q = query(collection(db, collectionPath));
+
+
+            onSnapshot(q, (snapshot) => {
+                historyLoaderEl.style.display = 'none';
+                allWorkouts = [];
+                snapshot.forEach((doc) => {
+                    allWorkouts.push({ id: doc.id, ...doc.data() });
+                });
+
+
+                // Sort workouts by date, newest first (in JS)
+                allWorkouts.sort((a, b) => b.date.toMillis() - a.date.toMillis());
+
+
+                renderHistoryList();
+                renderWorkoutTable(currentWorkoutType); // Re-render table to get new "last workout" data
+            }, (error) => {
+                console.error("Error with Firestore snapshot:", error);
+                historyListEl.innerHTML = "<p class='text-red-500'>Error loading history.</p>";
+            });
+        }
+
+
+        // --- UI Rendering ---
+
+
+        function populateWorkoutSelector() {
+            const workoutNames = Object.keys(workoutTemplates);
+            workoutSelectEl.innerHTML = workoutNames
+                .map(name => `<option value="${name}">${name}</option>`)
+                .join('');
+            currentWorkoutType = workoutNames[0]; // Set to "Upper Body (B)"
+            renderWorkoutTable(currentWorkoutType);
+        }
+
+
+        function renderWorkoutTable(workoutType) {
+            currentWorkoutType = workoutType;
+            const template = workoutTemplates[workoutType];
+            const lastWorkout = allWorkouts.find(w => w.workoutType === workoutType); // Find most recent
+
+
+            if (!template) {
+                tableContainerEl.innerHTML = "<p>Please select a workout.</p>";
+                return;
+            }
+
+
+            // Cardio template
+            if (template[0].type === 'cardio') {
+                tableContainerEl.innerHTML = `
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-4 text-left">Protocol</th>
+                                <th class="py-3 px-4 text-left">Target</th>
+                                <th class="py-3 px-4 text-left">Log (e.g., Speed, Watts, Rounds)</th>
+                                <th class="py-3 px-4 text-left">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light">
+                            ${template.map((ex, index) => `
+                                <tr class="border-b border-gray-200 hover:bg-gray-100" data-name="${ex.name}">
+                                    <td class="py-3 px-4 font-medium">${ex.name}</td>
+                                    <td class="py-3 px-4">${ex.target}</td>
+                                    <td class="py-3 px-4">
+                                        <input type="text" class="log-input" data-field="log" placeholder="${lastWorkout?.exercises?.[index]?.log || '...'}">
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <input type="text" class="log-input notes-input" data-field="notes" placeholder="${lastWorkout?.exercises?.[index]?.notes || '...'}">
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+            } else {
+                // Strength template
+                tableContainerEl.innerHTML = `
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-4 text-left">Exercise</th>
+                                <th class="py-3 px-4 text-left">Target</th>
+                                <th class="py-3 px-4 text-center">Weight</th>
+                                ${Array.from({ length: Math.max(...template.map(ex => ex.sets)) }, (_, i) => 
+                                    `<th class="py-3 px-4 text-center">Set ${i + 1}</th>`
+                                ).join('')}
+                                <th class="py-3 px-4 text-left">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 text-sm font-light">
+                            ${template.map((ex, exIndex) => `
+                                <tr class="border-b border-gray-200 hover:bg-gray-100" data-name="${ex.name}" data-num-sets="${ex.sets}">
+                                    <td class="py-3 px-4 font-medium">${ex.name}</td>
+                                    <td class="py-3 px-4">${ex.target}</td>
+                                    <td class="py-3 px-4">
+                                        <input type="text" class="log-input" data-field="weight" placeholder="${lastWorkout?.exercises?.[exIndex]?.weight || '...'}">
+                                    </td>
+                                    ${Array.from({ length: ex.sets }, (_, setIndex) => `
+                                        <td class="py-3 px-4">
+                                            <input type="text" class="log-input" data-field="set" data-set-index="${setIndex}" placeholder="${lastWorkout?.exercises?.[exIndex]?.sets?.[setIndex] || '...'}">
+                                        </td>
+                                    `).join('')}
+                                    ${Array.from({ length: Math.max(...template.map(ex => ex.sets)) - ex.sets }, () => 
+                                        `<td class="py-3 px-4 bg-gray-100"></td>`
+                                    ).join('')}
+                                    <td class="py-3 px-4">
+                                        <input type="text" class="log-input notes-input" data-field="notes" placeholder="${lastWorkout?.exercises?.[exIndex]?.notes || '...'}">
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+            }
+        }
+
+
+        function renderHistoryList() {
+            if (allWorkouts.length === 0) {
+                historyEmptyEl.style.display = 'block';
+                historyListEl.innerHTML = ''; // Clear any existing items
+            } else {
+                historyEmptyEl.style.display = 'none';
+                historyListEl.innerHTML = allWorkouts.map(workout => {
+                    const date = workout.date.toDate();
+                    const formattedDate = date.toLocaleD
