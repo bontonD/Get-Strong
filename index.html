@@ -177,19 +177,21 @@
     <!-- Firebase SDKs -->
     <script type="module">
         // Firebase Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, collection, addDoc, onSnapshot, query, Timestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        // import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // import { getFirestore, doc, collection, addDoc, onSnapshot, query, Timestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 
         // --- Configs & Global State ---
 
-
-        // DO NOT EDIT THESE. They are injected by the platform.
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
+  const firebaseConfig = {
+    apiKey: "AIzaSyAON1DzPXy5bpYiHer5CCzLEfJNM1OW2sc",
+    authDomain: "get-strong-beta.firebaseapp.com",
+    projectId: "get-strong-beta",
+    storageBucket: "get-strong-beta.firebasestorage.app",
+    messagingSenderId: "626842311691",
+    appId: "1:626842311691:web:ec06f070cdcfb53b24fb0e"
+  };
 
         let db, auth, userId;
         let allWorkouts = []; // Local cache of all workouts
@@ -573,4 +575,5 @@
 
     </script>
 </body>
+
 </html>
