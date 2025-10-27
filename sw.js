@@ -1,7 +1,7 @@
 ﻿// This file makes the app work offline by caching its files.
 // Data is handled by Firestore's built-in offline cache.
 
-const CACHE_NAME = 'workout-tracker-cache-v2'; // Incremented cache version
+const CACHE_NAME = 'workout-tracker-cache-v3'; // Incremented cache version
 // This list includes all the files your app needs to run.
 const FILES_TO_CACHE = [
  'index.html',
@@ -82,3 +82,4 @@ self.addEventListener('activate', (event) => {
  self.clients.claim();
 
 });
+
