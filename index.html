@@ -279,9 +279,20 @@
                             await signInAnonymously(auth);
                         }
                     } catch (e) {
-                        console.error("Error signing in:", e);
+                   //     console.error("Error signing in:", e);
+                   //     authStatusEl.textContent = "Login failed. Please refresh.";
+            
+                        // ** NEW, MORE DETAILED ERROR LOGGING **
+                        console.error("Error signing in anonymously:", e);
+                        console.error("Firebase Error Code:", e.code);
+                        console.error("Firebase Error Message:", e.message);
                         authStatusEl.textContent = "Login failed. Please refresh.";
+                        authStatusEl.title = `Error: ${e.code}. Check console for details.`;
+                        authStatusEl.style.color = "#e53e3e";     
+                    
                     }
+
+                    
                 }
             });
         }
@@ -577,4 +588,5 @@
 </body>
 
 </html>
+
 
