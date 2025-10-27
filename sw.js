@@ -4,7 +4,7 @@
 const CACHE_NAME = 'workout-tracker-cache-v2'; // Incremented cache version
 // This list includes all the files your app needs to run.
 const FILES_TO_CACHE = [
- 'workout_tracker.html',
+ 'index.html',
  'manifest.json',
  'https://cdn.tailwindcss.com' // Cache the Tailwind CSS file
 ];
@@ -80,4 +80,5 @@ self.addEventListener('activate', (event) => {
    })
  );
  self.clients.claim();
+
 });
