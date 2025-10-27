@@ -1,0 +1,428 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced 5-Day Workout Tracker</title>
+    
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Theme color for Android app bar -->
+    <meta name="theme-color" content="#2d3748">
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the editable cells */
+        [contenteditable="true"] {
+            background-color: #f7fafc; /* light gray */
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease-in-out;
+            min-width: 60px;
+            text-align: center;
+        }
+        [contenteditable="true"]:focus {
+            background-color: #ffffff;
+            border-color: #4299e1; /* blue-500 */
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+        }
+        /* Tab styles */
+        .tab-button {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #4a5568; /* gray-600 */
+        }
+        .tab-button.active {
+            color: #2b6cb0; /* blue-700 */
+            border-bottom-color: #2b6cb0;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Table styles for readability */
+        th {
+            background-color: #edf2f7; /* gray-200 */
+            padding: 12px;
+            text-align: left;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0; /* gray-300 */
+        }
+        /* Help page content styling */
+        .help-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #2d3748; /* gray-800 */
+        }
+        .help-content p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: #4a5568; /* gray-600 */
+        }
+        .help-content ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+        .help-content li {
+            margin-bottom: 0.5rem;
+        }
+
+
+        /* Make table responsive */
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            min-width: 600px; /* Ensure table doesn't get too cramped */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+
+
+    <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        <header class="p-6 bg-gray-800 text-white">
+            <h1 class="text-2xl md:text-3xl font-bold">Advanced 5-Day Workout Tracker</h1>
+            <p class="mt-2 text-gray-300">Based on your Upper/Lower Split. Click the cells to log your lifts.</p>
+        </header>
+
+
+        <!-- Tab Navigation -->
+        <nav class="flex flex-wrap border-b border-gray-300" aria-label="Tabs">
+            <button class="tab-button active" onclick="openTab(event, 'upperB')">Upper (B)</button>
+            <button class="tab-button" onclick="openTab(event, 'lowerB')">Lower (B)</button>
+            <button class="tab-button" onclick="openTab(event, 'vo2max')">VO2max</button>
+            <button class="tab-button" onclick="openTab(event, 'upperA')">Upper (A)</button>
+            <button class="tab-button" onclick="openTab(event, 'lowerA')">Lower (A)</button>
+            <button class="tab-button" onclick="openTab(event, 'log')">Weekly Log</button>
+            <button class="tab-button" onclick="openTab(event, 'help')">Help</button>
+        </nav>
+
+
+        <!-- Tab Content -->
+        <div class="p-6">
+
+
+            <!-- Day 1: Upper Body (B) -->
+            <div id="upperB" class="tab-content active">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Day 1: Upper Body (B) - Pull Focus</h2>
+                <div class="table-container">
+                    <table class="min-w-full bg-white rounded-lg">
+                        <thead>
+                            <tr>
+                                <th>Exercise</th>
+                                <th>Target</th>
+                                <th>Weight</th>
+                                <th>Set 1 (Reps)</th>
+                                <th>Set 2 (Reps)</th>
+                                <th>Set 3 (Reps)</th>
+                                <th>Set 4 (Reps)</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-medium">Pull-ups / Lat Pulldown</td>
+                                <td>4 sets of 6-12</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Overhead Press</td>
+                                <td>3 sets of 6-10</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Single-Arm DB Row (3A)</td>
+                                <td>3 sets of 8-12 / arm</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Dips / Close Grip Push-ups (3B)</td>
+                                <td>3 sets of 10-15</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                N/A
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Bicep Curls (Finisher)</td>
+                                <td>2 sets of 12-15</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Day 2: Lower Body (B) -->
+            <div id="lowerB" class="tab-content">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Day 2: Lower Body (B) - Hinge Focus</h2>
+                <div class="table-container">
+                    <table class="min-w-full bg-white rounded-lg">
+                        <thead>
+                            <tr>
+                                <th>Exercise</th>
+                                <th>Target</th>
+                                <th>Weight</th>
+                                <th>Set 1 (Reps)</th>
+                                <th>Set 2 (Reps)</th>
+                                <th>Set 3 (Reps)</th>
+                                <th>Set 4 (Reps)</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-medium">Deadlift (Conventional/Sumo)</td>
+                                <td>4 sets of 5-8</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Leg Press / Hack Squat</td>
+                                <td>3 sets of 10-15</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Hamstring Curls (3A)</td>
+                                <td>3 sets of 12-15</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Calf Raises (3B)</td>
+                                <td>3 sets of 15-20</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Day 3: VO2max -->
+            <div id="vo2max" class="tab-content">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Day 3: VO2max (HIIT)</h2>
+                <p class="mb-4 text-gray-600">Choose one protocol. Log your work interval details. See the "Help" tab for more info.</p>
+                <div class="table-container">
+                    <table class="min-w-full bg-white rounded-lg">
+                        <thead>
+                            <tr>
+                                <th>Protocol</th>
+                                <th>Target</th>
+                                <th>Your Log (Speed/Watts)</th>
+                                <th>Rounds</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-medium">Running</td>
+                                <td>4-5 rounds of 4min work / 3-4min rest</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Cycling / Rower</td>
+                                <td>5-6 rounds of 3min work / 3min rest</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Assault Bike</td>
+                                <td>8-10 rounds of 60s work / 90-120s rest</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Day 5: Upper Body (A) -->
+            <div id="upperA" class="tab-content">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Day 5: Upper Body (A) - Push Focus</h2>
+                <div class="table-container">
+                    <table class="min-w-full bg-white rounded-lg">
+                        <thead>
+                            <tr>
+                                <th>Exercise</th>
+                                <th>Target</th>
+                                <th>Weight</th>
+                                <th>Set 1 (Reps)</th>
+                                <th>Set 2 (Reps)</th>
+                                <th>Set 3 (Reps)</th>
+                                <th>Set 4 (Reps)</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-medium">Barbell Bench Press</td>
+                                <td>4 sets of 6-10</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Seated Cable Row</td>
+                                <td>3 sets of 8-12</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Incline DB Press (Superset 3A)</td>
+                                <td>3 sets of 8-12</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td content-editable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Face Pulls (Superset 3B)</td>
+                                <td>3 sets of 15-20</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Tricep Pushdowns (Finisher)</td>
+                                <td>2 sets of 12-15</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Day 6: Lower Body (A) -->
+            <div id="lowerA" class="tab-content">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Day 6: Lower Body (A) - Quad Focus</h2>
+                <div class="table-container">
+                    <table class="min-w-full bg-white rounded-lg">
+                        <thead>
+                            <tr>
+                                <th>Exercise</th>
+                                <th>Target</th>
+                                <th>Weight</th>
+                                <th>Set 1 (Reps)</th>
+                                <th>Set 2 (Reps)</th>
+                                <th>Set 3 (Reps)</th>
+                                <th>Set 4 (Reps)</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-medium">Barbell Back Squat</td>
+                                <td>4 sets of 6-10</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Romanian Deadlifts (RDLs)</td>
+                                <td>3 sets of 8-12</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
+                                <td contenteditable="true"></td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Bulgarian Split Squats (3A)</td>
+                                <td>3 sets of 8-12 / leg</td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td contenteditable="true"></td>
+                                <td>N/A</td>
