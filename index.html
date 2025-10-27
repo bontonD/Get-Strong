@@ -414,4 +414,163 @@
                 historyEmptyEl.style.display = 'none';
                 historyListEl.innerHTML = allWorkouts.map(workout => {
                     const date = workout.date.toDate();
-                    const formattedDate = date.toLocaleD
+                    const formattedDate = date.toLocaleDateString(undefined, {
+                        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    
+                    return `
+                        <div class="history-item">
+                            <div class="history-header" data-id="${workout.id}">
+                                <div>
+                                    <p class="font-semibold text-gray-800">${workout.workoutType}</p>
+                                    <p class="text-sm text-gray-600">${formattedDate}</p>
+                                </div>
+                                <span class="text-gray-500 text-xl">&#x25BC;</span>
+                            </div>
+                            <div class="history-body" id="history-body-${workout.id}">
+                                ${workout.exercises.map(ex => `
+                                    <div class="mb-3 pb-3 border-b">
+                                        <p class="font-semibold text-gray-700">${ex.name}</p>
+                                        ${ex.type === 'cardio' ? `
+                                            <p class="text-sm"><strong>Log:</strong> ${ex.log || 'N/A'}</p>
+                                        ` : `
+                                            <p class="text-sm"><strong>Weight:</strong> ${ex.weight || 'N/A'}</p>
+                                            <p class="text-sm"><strong>Reps:</strong> ${ex.sets.join(', ') || 'N/A'}</p>
+                                        `}
+                                        <p class="text-sm"><strong>Notes:</strong> ${ex.notes || 'N/A'}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+
+        // --- Event Listeners ---
+        function setupEventListeners() {
+            workoutSelectEl.addEventListener('change', (e) => {
+                renderWorkoutTable(e.target.value);
+            });
+
+
+            saveBtnEl.addEventListener('click', saveWorkout);
+
+
+            // Event delegation for history item toggling
+            historyListEl.addEventListener('click', (e) => {
+                const header = e.target.closest('.history-header');
+                if (header) {
+                    const body = document.getElementById(`history-body-${header.dataset.id}`);
+                    const arrow = header.querySelector('span');
+                    if (body) {
+                        body.classList.toggle('open');
+                        arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+                    }
+                }
+            });
+        }
+
+
+        // --- Save Logic ---
+        async function saveWorkout() {
+            if (!userId) {
+                saveStatusEl.textContent = "Error: Not logged in.";
+                return;
+            }
+
+
+            saveBtnEl.disabled = true;
+            saveBtnEl.textContent = "Saving...";
+            
+            const workoutData = {
+                workoutType: currentWorkoutType,
+                date: Timestamp.now(),
+                exercises: []
+            };
+
+
+            const template = workoutTemplates[currentWorkoutType];
+            const isCardio = template[0].type === 'cardio';
+            const rows = tableContainerEl.querySelectorAll('tbody tr');
+
+
+            rows.forEach(row => {
+                const exerciseName = row.dataset.name;
+                if (!exerciseName) return;
+
+
+                const exData = { name: exerciseName };
+
+
+                if (isCardio) {
+                    exData.log = row.querySelector('[data-field="log"]').value;
+                    exData.notes = row.querySelector('[data-field="notes"]').value;
+                    exData.type = 'cardio';
+                } else {
+                    exData.weight = row.querySelector('[data-field="weight"]').value;
+                    exData.notes = row.querySelector('[data-field="notes"]').value;
+                    exData.sets = [];
+                    row.querySelectorAll('[data-field="set"]').forEach(setEl => {
+                        exData.sets.push(setEl.value);
+                    });
+                }
+                workoutData.exercises.push(exData);
+            });
+
+
+            try {
+                const collectionPath = `/artifacts/${appId}/users/${userId}/completed_workouts`;
+                await addDoc(collection(db, collectionPath), workoutData);
+                
+                saveStatusEl.textContent = "Workout saved successfully!";
+                setTimeout(() => saveStatusEl.textContent = "", 3000);
+                
+                // Clear the table inputs
+                renderWorkoutTable(currentWorkoutType);
+
+
+            } catch (e) {
+                console.error("Error saving workout:", e);
+                saveStatusEl.textContent = "Error saving workout. Please try again.";
+            } finally {
+                saveBtnEl.disabled = false;
+                saveBtnEl.textContent = "Save Workout";
+            }
+        }
+
+
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('ServiceWorker registered'))
+                    .catch(error => console.log('ServiceWorker registration failed: ', error));
+            });
+        }
+
+
+        // --- Global Tab Function ---
+        window.openTab = function(event, tabName) {
+            let i, tabcontent, tabbuttons;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            event.currentTarget.className += " active";
+        }
+
+
+        // --- Start the app ---
+        document.addEventListener('DOMContentLoaded', initApp);
+
+
+    </script>
+</body>
+</html>
