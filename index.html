@@ -300,7 +300,7 @@
 
         // --- Firestore Real-time Listener ---
         async function setupFirestoreListener(userId) {
-            const collectionPath = `/artifacts/${appId}/users/${userId}/completed_workouts`;
+            const collectionPath = `users/${userId}/completed_workouts`;
             const q = query(collection(db, collectionPath));
 
 
@@ -534,7 +534,7 @@
 
 
             try {
-                const collectionPath = `/artifacts/${appId}/users/${userId}/completed_workouts`;
+                const collectionPath = `users/${userId}/completed_workouts`;
                 await addDoc(collection(db, collectionPath), workoutData);
                 
                 saveStatusEl.textContent = "Workout saved successfully!";
@@ -588,6 +588,7 @@
 </body>
 
 </html>
+
 
 
 
