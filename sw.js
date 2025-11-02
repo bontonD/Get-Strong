@@ -6,7 +6,7 @@ const CACHE_NAME = 'workout-tracker-cache-v4'; // Incremented cache version
 const FILES_TO_CACHE = [
  'index.html',
  'manifest.json',
- 'https://cdn.tailwindcss.com' // Cache the Tailwind CSS file
+// 'https://cdn.tailwindcss.com' // Cache the Tailwind CSS file
 ];
 
 // 1. Install Event: Cache all the app files
@@ -82,5 +82,6 @@ self.addEventListener('activate', (event) => {
  self.clients.claim();
 
 });
+
 
 
