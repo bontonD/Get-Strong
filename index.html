@@ -337,7 +337,7 @@
                 renderWorkoutTable(currentWorkoutType); // Re-render table to get new "last workout" data
             }, (error) => {
                 console.error("Error with Firestore snapshot:", error);
-                console.log('Here is the user:', user);
+                console.log('Here is the user:', userId);
                 console.log('Here is the query:', q);
                 historyListEl.innerHTML = "<p class='text-red-500'>Error loading history.</p>";
             });
@@ -605,6 +605,7 @@
 </body>
 
 </html>
+
 
 
 
