@@ -314,8 +314,8 @@
         async function setupFirestoreListener(userId) {
             const collectionPath = `users/${userId}/completed_workouts`;
             const q = query(collection(db, collectionPath));
-            console.log('Queried the collection with the following path and going into the sanpshot:", collectionPath);
-            console.log('Here is the query", collectionPath);
+            console.log('Queried the collection with the following path and going into the sanpshot:",userId);
+           // console.log('Here is the query");
 
             onSnapshot(q, (snapshot) => {
                 console.log('Inside the Onsnapshot function call');
@@ -603,6 +603,7 @@
 </body>
 
 </html>
+
 
 
 
