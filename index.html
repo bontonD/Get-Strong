@@ -315,7 +315,7 @@
                 historyLoaderEl.style.display = 'none';
                 allWorkouts = [];
                 snapshot.forEach((doc) => {
-                    //console.log('Inside the forEach Doc function:', doc.id, ...doc.data());
+                    console.log('Inside the forEach Doc function'); //, doc.id, ...doc.data());
                     allWorkouts.push({ id: doc.id, ...doc.data() });
                 });
 
@@ -596,6 +596,7 @@
 </body>
 
 </html>
+
 
 
 
