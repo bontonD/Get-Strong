@@ -277,6 +277,7 @@
                     userId = user.uid;
                     authStatusEl.textContent = `Logged in as: ${userId}`;
                     console.log('UserId onAuthStateChanged: ', userId);
+                    console.log('Here is the user:', user);
                     await setupFirestoreListener(userId);
                 } else {
                     // No user, sign in.
@@ -288,7 +289,7 @@
                    //     } else {
                             console.log('Signing in Anonymously...');
                             await signInAnonymously(auth);
-                            console.log('Waiting for anonymous sign in is OVER.');
+                            console.log('Waiting for anonymous sign in is OVER. Here is the auth:', auth);
                 //        }
                     } catch (e) {
                    //     console.error("Error signing in:", e);
@@ -315,14 +316,15 @@
             const collectionPath = `users/${userId}/completed_workouts`;
             const q = query(collection(db, collectionPath));
             console.log('Queried the collection with the following path and going into the sanpshot:',collectionPath);
-            console.log('Here is the query', db);
+            console.log('Here is the db', db);
+            console.log('Here is the query', q);
 
             onSnapshot(q, (snapshot) => {
                 console.log('Inside the Onsnapshot function call');
                 historyLoaderEl.style.display = 'none';
                 allWorkouts = [];
                 snapshot.forEach((doc) => {
-                     console.log('Inside the forEach Doc function:', doc.id, ...doc.data());
+                    console.log('Inside the forEach Doc function:', doc.id, ...doc.data());
                     allWorkouts.push({ id: doc.id, ...doc.data() });
                 });
 
@@ -335,13 +337,14 @@
                 renderWorkoutTable(currentWorkoutType); // Re-render table to get new "last workout" data
             }, (error) => {
                 console.error("Error with Firestore snapshot:", error);
+                console.log('Here is the user:', user);
+                console.log('Here is the query:', q);
                 historyListEl.innerHTML = "<p class='text-red-500'>Error loading history.</p>";
             });
         }
 
 
         // --- UI Rendering ---
-
 
         function populateWorkoutSelector() {
             const workoutNames = Object.keys(workoutTemplates);
@@ -357,7 +360,6 @@
             currentWorkoutType = workoutType;
             const template = workoutTemplates[workoutType];
             const lastWorkout = allWorkouts.find(w => w.workoutType === workoutType); // Find most recent
-
 
             if (!template) {
                 tableContainerEl.innerHTML = "<p>Please select a workout.</p>";
@@ -603,6 +605,7 @@
 </body>
 
 </html>
+
 
 
 
